@@ -237,7 +237,11 @@ async def get_code(browser, item, cookie_string, retries=1):
     await page.setCookie(*cookies)
 
     try:
-        await page.goto(item['url'])
+        try:
+            # 设置最多等待 15 秒
+            await page.goto(item['url'], timeout=15000)
+        except Exception as e:
+            await debug(f"打开 {item['url']} 页面超时15秒，继续执行后续操作...")
 
         # 防止网站检测
         await page.evaluate('''() =>{ Object.defineProperties(navigator,{ webdriver:{ get: () => false } }) }''')
